@@ -125,4 +125,468 @@
     input[type="number"] {
       height: 36px;
       padding: 0 10px;
-      border: 
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+    }
+
+    input[type="number"] {
+      width: 84px;
+      text-align: right;
+    }
+
+    .unit {
+      font-size: 0.82rem;
+      color: var(--muted);
+      min-width: 36px;
+    }
+
+    .segmented {
+      display: inline-flex;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .segmented button {
+      border: none;
+      background: #fff;
+      padding: 7px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .segmented button + button {
+      border-left: 1px solid var(--border-strong);
+    }
+
+    .segmented button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .cyl-row {
+      display: grid;
+      grid-template-columns: 1fr 72px 104px;
+      align-items: center;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+
+    .cyl-row:last-child {
+      border-bottom: none;
+    }
+
+    .cyl-row input[type="number"] {
+      width: 100%;
+    }
+
+    .cyl-row select {
+      width: 100%;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .result-panel {
+      position: sticky;
+      top: 16px;
+    }
+
+    .status-banner {
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: #f1f5f9;
+      color: var(--muted);
+    }
+
+    .status-banner.sufficient {
+      background: var(--ok-bg);
+      color: var(--ok-text);
+      border-bottom-color: var(--ok-border);
+    }
+
+    .status-banner.insufficient {
+      background: var(--bad-bg);
+      color: var(--bad-text);
+      border-bottom-color: var(--bad-border);
+    }
+
+    .metric {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .metric-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .metric-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .reserve-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 16px;
+      font-size: 0.85rem;
+      color: var(--text);
+      background: var(--accent-soft);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .reserve-toggle input {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+    }
+
+    .reset-wrap {
+      padding: 12px 16px;
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 9px;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .reset-btn:hover {
+      background: #f8fafc;
+      color: var(--text);
+    }
+
+    .disclaimer {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .disclaimer strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Patient Transfer Oxygen Calculator</h1>
+    </header>
+
+    <div class="layout">
+      <div class="card">
+        <div class="section-header">Ventilation &amp; Oxygen Flow</div>
+
+        <div class="input-row">
+          <div>
+            <div class="input-label">Ventilator</div>
+            <div class="input-sub">3 L/min baseline bias flow</div>
+          </div>
+          <div class="control-group">
+            <select id="ventilator">
+              <option value="Hamilton T1">Hamilton T1</option>
+              <option value="Oxylog 3000+">Oxylog 3000+</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div>
+            <div class="input-label">High Flow</div>
+          </div>
+          <div class="control-group">
+            <div class="segmented">
+              <button type="button" id="hf-no" class="active" onclick="setHighFlow(false)">No</button>
+              <button type="button" id="hf-yes" onclick="setHighFlow(true)">Yes</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="std-vent-fields">
+          <div class="input-row">
+            <div>
+              <div class="input-label">Tidal Volume (VT)</div>
+            </div>
+            <div class="control-group">
+              <input type="number" id="vt" min="0" max="2000" step="10" value="450" />
+              <span class="unit">mL</span>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div>
+              <div class="input-label">Respiratory Rate (RR)</div>
+              <div class="input-sub" id="mv-readout">Minute Volume: 6.3 L/min</div>
+            </div>
+            <div class="control-group">
+              <input type="number" id="rr" min="0" max="80" step="1" value="14" />
+              <span class="unit">/min</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="hf-field" class="input-row hidden">
+          <div>
+            <div class="input-label">High Flow Rate</div>
+          </div>
+          <div class="control-group">
+            <input type="number" id="hf-rate" min="1" max="80" step="1" value="40" />
+            <span class="unit">L/min</span>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div>
+            <div class="input-label">FiO₂</div>
+            <div class="input-sub">Enter 0.21 to 1.0</div>
+          </div>
+          <div class="control-group">
+            <input type="number" id="fio2" min="0.21" max="1" step="0.01" value="0.40" />
+            <span class="unit"></span>
+          </div>
+        </div>
+
+        <div class="section-header">Journey Time</div>
+
+        <div class="input-row">
+          <div>
+            <div class="input-label">Estimated Journey Duration</div>
+            <div class="input-sub">Bedside to bedside (5 min increments)</div>
+          </div>
+          <div class="control-group">
+            <select id="duration"></select>
+          </div>
+        </div>
+
+        <div class="section-header">Oxygen Cylinder Availability</div>
+
+        <div id="cylinder-list"></div>
+      </div>
+
+      <div class="card result-panel">
+        <div id="status-banner" class="status-banner">Enter Cylinders</div>
+
+        <label class="reserve-toggle">
+          <span>Include 2× safety reserve (FiO₂ 1.0)</span>
+          <input type="checkbox" id="safety-reserve" />
+        </label>
+
+        <div class="metric">
+          <div class="metric-label">Estimated O₂ Required</div>
+          <div class="metric-value" id="req-o2">0 L</div>
+          <div class="metric-sub" id="flow-sub">0.0 L/min O₂ consumption</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">Total Available O₂</div>
+          <div class="metric-value" id="avail-o2">0 L</div>
+          <div class="metric-sub" id="diff-sub">No cylinders selected</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">Estimated Oxygen Duration</div>
+          <div class="metric-value" id="est-duration">0 min</div>
+          <div class="metric-sub">At current O₂ flow rate</div>
+        </div>
+
+        <div class="reset-wrap">
+          <button type="button" class="reset-btn" onclick="resetForm()">Reset Calculator</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> This calculator is a clinical planning aid only and does not replace clinical judgement or local SOPs. All outputs are estimates based on nominal cylinder capacities (&plusmn;5%) and flow rate settings (&plusmn;20%). Changes in patient condition, FiO₂, minute volume, circuit leaks, inline nebulisers, or journey delays (traffic, weather, vehicle breakdown) will alter actual oxygen consumption. Always verify cylinder pressure gauges and valve operation physically prior to departure and carry an adequate emergency reserve.
+    </div>
+  </div>
+
+  <script>
+    const CYLINDERS = [
+      { id: 'CD', label: 'CD (460 L)', capacity: 460 },
+      { id: 'ZD', label: 'ZD (605 L)', capacity: 605 },
+      { id: 'E',  label: 'E (680 L)',  capacity: 680 },
+      { id: 'ZX', label: 'ZX (3,040 L)', capacity: 3040 }
+    ];
+
+    let isHighFlow = false;
+
+    function init() {
+      const durSelect = document.getElementById('duration');
+      for (let m = 5; m <= 360; m += 5) {
+        const opt = document.createElement('option');
+        opt.value = m;
+        const hrs = Math.floor(m / 60);
+        const mins = m % 60;
+        opt.textContent = hrs > 0
+          ? `${m} min (${hrs}h ${mins > 0 ? mins + 'm' : ''})`.trim()
+          : `${m} min`;
+        if (m === 60) opt.selected = true;
+        durSelect.appendChild(opt);
+      }
+
+      const cylList = document.getElementById('cylinder-list');
+      CYLINDERS.forEach(c => {
+        const row = document.createElement('div');
+        row.className = 'cyl-row';
+        row.innerHTML = `
+          <div class="input-label">${c.label}</div>
+          <input type="number" id="qty-${c.id}" min="0" max="20" step="1" value="0" aria-label="${c.label} quantity" />
+          <select id="full-${c.id}" aria-label="${c.label} fullness">
+            <option value="1">Full</option>
+            <option value="0.75">3/4</option>
+            <option value="0.5">1/2</option>
+            <option value="0.25">1/4</option>
+          </select>
+        `;
+        cylList.appendChild(row);
+      });
+
+      document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+      });
+
+      calculate();
+    }
+
+    function setHighFlow(val) {
+      isHighFlow = val;
+      document.getElementById('hf-no').classList.toggle('active', !val);
+      document.getElementById('hf-yes').classList.toggle('active', val);
+      document.getElementById('std-vent-fields').classList.toggle('hidden', val);
+      document.getElementById('hf-field').classList.toggle('hidden', !val);
+      calculate();
+    }
+
+    function formatDuration(totalMins) {
+      if (!isFinite(totalMins) || totalMins <= 0) return '0 min';
+      const rounded = Math.floor(totalMins);
+      const h = Math.floor(rounded / 60);
+      const m = rounded % 60;
+      if (h === 0) return `${m} min`;
+      return `${h} hr ${m} min`;
+    }
+
+    function calculate() {
+      const biasFlow = 3;
+      let fio2 = parseFloat(document.getElementById('fio2').value);
+      if (isNaN(fio2)) fio2 = 0.21;
+      fio2 = Math.min(1, Math.max(0, fio2));
+
+      let totalGasFlow = 0;
+      if (isHighFlow) {
+        const hfRate = Math.max(0, parseFloat(document.getElementById('hf-rate').value) || 0);
+        totalGasFlow = hfRate + biasFlow;
+      } else {
+        const vtMl = Math.max(0, parseFloat(document.getElementById('vt').value) || 0);
+        const rr = Math.max(0, parseFloat(document.getElementById('rr').value) || 0);
+        const mv = (vtMl / 1000) * rr;
+        document.getElementById('mv-readout').textContent = `Minute Volume: ${mv.toFixed(1)} L/min`;
+        totalGasFlow = mv + biasFlow;
+      }
+
+      const durationMins = parseInt(document.getElementById('duration').value, 10) || 0;
+      const useReserve = document.getElementById('safety-reserve').checked;
+
+      const effectiveFio2 = useReserve ? 1.0 : fio2;
+      const effectiveMins = useReserve ? durationMins * 2 : durationMins;
+      const o2FlowRate = totalGasFlow * effectiveFio2;
+      const requiredO2 = Math.ceil(o2FlowRate * effectiveMins);
+
+      let availableO2 = 0;
+      CYLINDERS.forEach(c => {
+        const qty = Math.max(0, parseInt(document.getElementById(`qty-${c.id}`).value, 10) || 0);
+        const fullness = parseFloat(document.getElementById(`full-${c.id}`).value) || 0;
+        availableO2 += qty * c.capacity * fullness;
+      });
+      availableO2 = Math.round(availableO2);
+
+      const actualO2Flow = totalGasFlow * fio2;
+      const estDurationMins = actualO2Flow > 0 ? availableO2 / actualO2Flow : 0;
+
+      document.getElementById('req-o2').textContent = `${requiredO2.toLocaleString()} L`;
+      document.getElementById('flow-sub').textContent = `${o2FlowRate.toFixed(1)} L/min O₂ flow`;
+      document.getElementById('avail-o2').textContent = `${availableO2.toLocaleString()} L`;
+      document.getElementById('est-duration').textContent = formatDuration(estDurationMins);
+
+      const banner = document.getElementById('status-banner');
+      const diffSub = document.getElementById('diff-sub');
+      const diff = availableO2 - requiredO2;
+
+      if (availableO2 === 0) {
+        banner.className = 'status-banner';
+        banner.textContent = 'No Cylinders Entered';
+        diffSub.textContent = 'Select cylinder quantities below';
+      } else if (diff >= 0) {
+        banner.className = 'status-banner sufficient';
+        banner.textContent = 'Sufficient Supply';
+        diffSub.textContent = `+${diff.toLocaleString()} L surplus`;
+      } else {
+        banner.className = 'status-banner insufficient';
+        banner.textContent = 'Insufficient Supply';
+        diffSub.textContent = `${Math.abs(diff).toLocaleString()} L deficit`;
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('ventilator').value = 'Hamilton T1';
+      setHighFlow(false);
+      document.getElementById('vt').value = 450;
+      document.getElementById('rr').value = 14;
+      document.getElementById('hf-rate').value = 40;
+      document.getElementById('fio2').value = '0.40';
+      document.getElementById('duration').value = '60';
+      document.getElementById('safety-reserve').checked = false;
+      CYLINDERS.forEach(c => {
+        document.getElementById(`qty-${c.id}`).value = 0;
+        document.getElementById(`full-${c.id}`).value = '1';
+      });
+      calculate();
+    }
+
+    init();
+  </script>
+</body>
+</html>
