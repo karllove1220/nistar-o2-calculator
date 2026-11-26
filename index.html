@@ -555,7 +555,7 @@
       availableO2 = Math.round(availableO2);
 
       const actualO2Flow = totalGasFlow * fio2;
-      const estDurationMins = actualO2Flow > 0 ? availableO2 / actualO2Flow : 0;
+      const estDurationMins = o2FlowRate > 0 ? availableO2 / o2FlowRate : 0;
 
       document.getElementById('req-o2').textContent = `${requiredO2.toLocaleString()} L`;
       document.getElementById('flow-sub').textContent = `${o2FlowRate.toFixed(1)} L/min O₂ flow`;
