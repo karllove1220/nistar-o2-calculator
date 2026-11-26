@@ -436,7 +436,6 @@
           <div class="metric-label">Estimated Oxygen Duration</div>
           <div class="metric-value" id="est-duration">0 min</div>
           <div class="metric-sub" id="dur-sub">At current O₂ flow rate</div>
-          document.getElementById('dur-sub').textContent = useReserve ? 'At FiO₂ 1.0 (worst-case)' : 'At current O₂ flow rate';
         </div>
 
         <div class="reset-wrap">
@@ -555,13 +554,15 @@
       });
       availableO2 = Math.round(availableO2);
 
-      const actualO2Flow = totalGasFlow * fio2;
       const estDurationMins = o2FlowRate > 0 ? availableO2 / o2FlowRate : 0;
 
       document.getElementById('req-o2').textContent = `${requiredO2.toLocaleString()} L`;
       document.getElementById('flow-sub').textContent = `${o2FlowRate.toFixed(1)} L/min O₂ flow`;
       document.getElementById('avail-o2').textContent = `${availableO2.toLocaleString()} L`;
       document.getElementById('est-duration').textContent = formatDuration(estDurationMins);
+      document.getElementById('dur-sub').textContent = useReserve
+        ? 'At FiO₂ 1.0 (worst-case)'
+        : 'At current O₂ flow rate';
 
       const banner = document.getElementById('status-banner');
       const diffSub = document.getElementById('diff-sub');
