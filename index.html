@@ -435,7 +435,8 @@
         <div class="metric">
           <div class="metric-label">Estimated Oxygen Duration</div>
           <div class="metric-value" id="est-duration">0 min</div>
-          <div class="metric-sub">At current O₂ flow rate</div>
+          <div class="metric-sub" id="dur-sub">At current O₂ flow rate</div>
+          document.getElementById('dur-sub').textContent = useReserve ? 'At FiO₂ 1.0 (worst-case)' : 'At current O₂ flow rate';
         </div>
 
         <div class="reset-wrap">
