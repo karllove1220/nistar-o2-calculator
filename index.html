@@ -400,7 +400,7 @@
         <div class="input-row">
           <div>
             <div class="input-label">Estimated Journey Duration</div>
-            <div class="input-sub">Bedside to bedside (5 min increments)</div>
+            <div class="input-sub">Bedside to bedside</div>
           </div>
           <div class="control-group">
             <select id="duration"></select>
@@ -561,7 +561,7 @@
       document.getElementById('avail-o2').textContent = `${availableO2.toLocaleString()} L`;
       document.getElementById('est-duration').textContent = formatDuration(estDurationMins);
       document.getElementById('dur-sub').textContent = useReserve
-        ? 'At FiO₂ 1.0 (worst-case)'
+        ? 'At FiO₂ 1.0'
         : 'At current O₂ flow rate';
 
       const banner = document.getElementById('status-banner');
